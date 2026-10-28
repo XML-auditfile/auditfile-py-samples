@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+
+      - run: python -m pip install -r requirements.txt
+      # Loads each sample against the installed package; without arguments they print their usage and exit with 2.
+      - run: python validate.py || [ $? -eq 2 ]
+      - run: python read_to_memory.py || [ $? -eq 2 ]
+      # Also checks definitions/views.json and definitions/dialects.json against the package.
+      - run: python custom_definitions.py || [ $? -eq 2 ]

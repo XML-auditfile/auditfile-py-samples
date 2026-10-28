@@ -1,0 +1,113 @@
+{
+  "formatVersion": 1,
+  "type": "xaf",
+  "views": [
+    {
+      "name": "account_activity",
+      "label": {
+        "nl": "Activiteit per rekening",
+        "en": "Account activity"
+      },
+      "description": {
+        "nl": "Aantal boekingsregels, debet en credit per grootboekrekening, optioneel over een reeks perioden.",
+        "en": "Number of entry lines, debit and credit per general ledger account, optionally over a range of periods."
+      },
+      "source": "tr_line",
+      "joins": [
+        {
+          "table": "transaction"
+        },
+        {
+          "table": "ledger_account",
+          "on": [
+            [
+              "tr_line.acc_id",
+              "ledger_account.acc_id"
+            ]
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "name": "period_from",
+          "label": {
+            "nl": "Periode van",
+            "en": "Period from"
+          },
+          "column": "transaction.period_number",
+          "operator": ">="
+        },
+        {
+          "name": "period_to",
+          "label": {
+            "nl": "Periode tot en met",
+            "en": "Period to"
+          },
+          "column": "transaction.period_number",
+          "operator": "<="
+        }
+      ],
+      "columns": [
+        {
+          "name": "account",
+          "label": {
+            "nl": "Rekening",
+            "en": "Account"
+          },
+          "value": "tr_line.acc_id"
+        },
+        {
+          "name": "description",
+          "label": {
+            "nl": "Omschrijving",
+            "en": "Description"
+          },
+          "value": "ledger_account.acc_desc"
+        },
+        {
+          "name": "lines",
+          "label": {
+            "nl": "Regels",
+            "en": "Lines"
+          },
+          "aggregate": "count"
+        },
+        {
+          "name": "debit",
+          "label": {
+            "nl": "Debet",
+            "en": "Debit"
+          },
+          "aggregate": "sum",
+          "value": {
+            "op": "only",
+            "value": "tr_line.amnt",
+            "by": "tr_line.amnt_tp",
+            "in": [
+              "D"
+            ]
+          }
+        },
+        {
+          "name": "credit",
+          "label": {
+            "nl": "Credit",
+            "en": "Credit"
+          },
+          "aggregate": "sum",
+          "value": {
+            "op": "only",
+            "value": "tr_line.amnt",
+            "by": "tr_line.amnt_tp",
+            "in": [
+              "C"
+            ]
+          }
+        }
+      ],
+      "orderBy": [
+        "account"
+      ]
+    }
+  ]
+}

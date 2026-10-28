@@ -1,0 +1,2 @@
+# An exact version; Dependabot (.github/dependabot.yml) raises it after each release.
+xml-auditfile==0.1.0
